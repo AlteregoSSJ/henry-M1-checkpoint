@@ -5,12 +5,7 @@
 // métodos o construir determinadas funciones explicados más abajo. Pero todos los métodos ya implementados
 // en las homeowrks no es necesario que los vuelvan a definir.
 
-const {
-  Queue,
-  Node,
-  LinkedList,
-  BinarySearchTree
-} = require('./DS.js');
+const { Queue, Node, LinkedList, BinarySearchTree } = require('./DS.js');
 
 // ----------------------
 
@@ -42,10 +37,18 @@ const {
 // Pista: utilizar typeof para determinar si el valor de una propiedad es un objeto para aplicar
 // allí la recursión
 
-var objContains = function(obj, prop, value){
- 
-}
+var objContains = function (obj, prop, value) {
+  if (obj[prop] === value) {
+    return true;
+  }
 
+  for (let valor in obj) {
+    if (typeof obj[valor] === 'object') {
+      return objContains(obj[valor], prop, value);
+    }
+  }
+  return false;
+};
 
 // EJERCICIO 2
 // Implementar la función countArray: a partir de un array en el cual cada posición puede ser un único
@@ -57,9 +60,7 @@ var objContains = function(obj, prop, value){
 // Pista: utilizar el método Array.isArray() para determinar si algun elemento de array es un array anidado
 // [Para más información del método: https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Objetos_globales/Array/isArray]
 
-var countArray = function(array){
-  
-}
+var countArray = function (array) {};
 
 // ---------------------
 
@@ -77,10 +78,21 @@ var countArray = function(array){
 //    lista.add(3);
 //    lista.size(); --> 3
 
-LinkedList.prototype.size = function(){
- 
-}
+LinkedList.prototype.size = function () {
+  if (this.head === null) {
+    return 0;
+  }
 
+  let current = this.head;
+  let acc = 1;
+
+  while (current.next !== null) {
+    current = current.next;
+    acc = acc + 1;
+  }
+
+  return acc;
+};
 
 // EJERCICIO 4
 // Implementar el método addInPos dentro del prototype de LinkedList que deberá agregar un elemento en
@@ -98,9 +110,7 @@ LinkedList.prototype.size = function(){
 //    lista.addInPos(2, 3); --> Debería devolver false ya que no es posible agregar en la posición 2
 //    sin antes tener cargada la posición 0 y 1.
 
-LinkedList.prototype.addInPos = function(pos, value){
-  
-}
+LinkedList.prototype.addInPos = function (pos, value) {};
 
 // EJERCICIO 5
 // Implementar el método reverse dentro del prototype de LinkedList que invierta el orden de la lista
@@ -109,13 +119,9 @@ LinkedList.prototype.addInPos = function(pos, value){
 //    Lista original: Head --> 1 --> 4 --> 10 --> 13 --> null
 //    Lista nueva luego de aplicar el reverse: Head --> 13 --> 10 --> 4 --> 1 --> null
 
-LinkedList.prototype.reverse = function(){
- 
-}
-
+LinkedList.prototype.reverse = function () {};
 
 // ----------------------
-
 
 // ----- QUEUE -----
 
@@ -140,12 +146,39 @@ LinkedList.prototype.reverse = function(){
 //    - mazoUserA = [2,10,11]
 //    - mazoUserB = [6,9,10,3,6,4]
 
-var cardGame = function(mazoUserA, mazoUserB){
+var cardGame = function (mazoUserA, mazoUserB) {
+  let cartaA = 0;
+  let cartaB = 0;
+  let mazo = new Queue();
+  while (mazoUserA.size() !== 0 && mazoUserB.size() !== 0) {
+    cartaA = mazoUserA.dequeue();
+    cartaB = mazoUserB.dequeue();
 
-}
+    if (cartaA === cartaB) {
+      mazo.enqueue(cartaA);
+      mazo.enqueue(cartaB);
+      continue;
+    }
+    if (cartaA > cartaB) {
+      mazoUserA.enqueue(cartaA);
+      mazoUserA.enqueue(cartaB);
+    } else {
+      mazoUserB.enqueue(cartaB);
+      mazoUserB.enqueue(cartaA);
+    }
+  }
+
+  if (mazoUserA.size() === mazoUserB.size()) {
+    return 'Game tie!';
+  }
+  if (mazoUserA.size() > mazoUserB.size()) {
+    return 'A wins!';
+  } else {
+    return 'B wins!';
+  }
+};
 
 // ---------------
-
 
 // ----- BST -----
 
@@ -163,13 +196,17 @@ var cardGame = function(mazoUserA, mazoUserB){
 //      \
 //       5
 
-var generateBST = function(array){
- 
-}
+var generateBST = function (array) {
+  let arbol = new BinarySearchTree(array[0]);
 
+  for (let i = 1; i < array.length; i++) {
+    arbol.insert(array[i]);
+  }
+
+  return arbol;
+};
 
 // ---------------
-
 
 // Ejercicio 8
 // Dado un arreglo ordenado, encontrar el índice de un elemento específico pasado como parámetro
@@ -183,11 +220,20 @@ var generateBST = function(array){
 //    binarySearch(array, 2) --> Devolvería 1 ya que array[1] = 2
 //    [Donde 2 sería el número sobre el cuál queremos saber su posición en el array]
 
-
 var binarySearch = function (array, target) {
+  let start = 0;
+  let end = array.length - 1;
 
-  
-}
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+
+    if (array[mid] === target) return mid;
+    else if (array[mid] < target) start = mid + 1;
+    else end = mid - 1;
+  }
+
+  return -1;
+};
 
 // EJERCICIO 9
 // Ordená un arreglo de números usando selection sort. El nuevo arreglo debe ser devuelto.
@@ -197,10 +243,21 @@ var binarySearch = function (array, target) {
 // Ejemplo:
 //     selectionSort([1, 6, 2, 5, 3, 4]) --> [1, 2, 3, 4, 5, 6]
 
+var selectionSort = function (array) {
+  for (let i = 0; i < array.length; i++) {
+    let min = i;
 
-var selectionSort = function(array) {
-  
-}
+    for (let j = i + 1; j < array.length; j++) {
+      if (array[j] < array[min]) {
+        min = j;
+      }
+    }
+    let aux = array[i];
+    array[i] = array[min];
+    array[min] = aux;
+  }
+  return array;
+};
 
 // ----- Closures -----
 
@@ -217,11 +274,12 @@ var selectionSort = function(array) {
 //    sumaDiez(11); --> Devolverá 21 (Ya que 11 + 10 = 21)
 
 function closureSum(numFijo) {
- 
+  return function (n) {
+    return numFijo + n;
+  };
 }
 
 // -------------------
-
 
 // ----- EXTRA CREDIT -----
 
@@ -232,9 +290,7 @@ function closureSum(numFijo) {
 //    const anagrams = allAnagrams('abc');
 //    console.log(anagrams); // [ 'abc', 'acb', 'bac', 'bca', 'cab', 'cba' ]
 
-var allAnagrams = function(string, array, index) {
- 
-};
+var allAnagrams = function (string, array, index) {};
 
 module.exports = {
   objContains,
@@ -247,4 +303,4 @@ module.exports = {
   allAnagrams,
   selectionSort,
   closureSum,
-}
+};
